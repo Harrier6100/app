@@ -1,0 +1,9 @@
+@font-face {
+  font-family: "Noto Sans JP";
+  font-weight: 400;
+  src: url(../fonts/NotoSansJP-Regular.woff) format("woff");
+}
+
+:root {
+  --bs-body-font-family: "Noto Sans JP";
+}
