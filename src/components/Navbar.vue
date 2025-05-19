@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <div class="container-fluid">
-            <router-link class="navbar-brand" to="/">LINTEC</router-link>
+            <router-link class="navbar-brand" to="/">Name</router-link>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>

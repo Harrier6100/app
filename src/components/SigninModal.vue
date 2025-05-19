@@ -45,7 +45,7 @@ const props = defineProps({
     isOpen: Boolean,
 });
 const emit = defineEmits(['close']);
-const authStore = useAuthStore();
+const auth = useAuthStore();
 const { isLoading, startLoading, stopLoading } = useLoading();
 const credentialRestore = () => ({
     id: '',
@@ -83,7 +83,7 @@ const signin = async () => {
 
     try {
         startLoading();
-        await authStore.signin(credential.value);
+        await auth.signin(credential.value);
         close();
     } catch (error) {
         message.value.form = { error: error.message };

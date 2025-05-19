@@ -67,7 +67,7 @@ const props = defineProps({
     isOpen: Boolean,
 });
 const emit = defineEmits(['close']);
-const userStore = useUserStore();
+const user = useUserStore();
 const { isLoading, startLoading, stopLoading } = useLoading();
 const profileRestore = () => ({
     name: '',
@@ -82,9 +82,9 @@ watch(() => props.isOpen, async (isOpen) => {
     if (isOpen) {
         try {
             startLoading();
-            await userStore.fetchUser();
-            profile.value.name = userStore.user.name;
-            profile.value.email = userStore.user.email;
+            await user.fetchUser();
+            profile.value.name = user.user.name;
+            profile.value.email = user.user.email;
         } catch (error) {
             message.value.form = { error: error.message };
         } finally {
@@ -139,7 +139,7 @@ const save = async () => {
     try {
         startLoading();
         await api.put('/api/profile', profile.value);
-        await userStore.fetchUser();
+        await user.fetchUser();
         message.value.form = { success: 'プロファイルを変更しました。' };
     } catch (error) {
         message.value.form = { error: error.message };

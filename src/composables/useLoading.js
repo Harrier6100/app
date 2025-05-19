@@ -2,18 +2,18 @@ import { computed } from 'vue';
 import { useLoadingStore } from '@/stores/useLoadingStore';
 
 export const useLoading = () => {
-    const loadingStore = useLoadingStore();
+    const loading = useLoadingStore();
 
     const isLoading = computed(() => {
-        return loadingStore.isLoading;
+        return loading.isLoading;
     });
 
     const startLoading = () => {
-        loadingStore.startLoading();
+        loading.startLoading();
     };
 
     const stopLoading = () => {
-        loadingStore.stopLoading();
+        loading.stopLoading();
     };
 
     return {

@@ -1,10 +1,10 @@
 <template>
     <div class="d-flex justify-content-end">
-        <button class="btn btn-link py-0" @click="prevPage" :disabled="props.page === 1">
+        <button class="btn btn-link py-0" @click="prevPage" :disabled="props.currentPage === 1">
             <i class="bi bi-chevron-left"></i>
         </button>
-        <div class="mx-2">{{ props.page }} - {{ props.pages }}</div>
-        <button class="btn btn-link py-0" @click="nextPage" :disabled="page === pages">
+        <div class="mx-2">{{ props.currentPage }} - {{ props.totalPage }}</div>
+        <button class="btn btn-link py-0" @click="nextPage" :disabled="props.currentPage === props.totalPage">
             <i class="bi bi-chevron-right"></i>
         </button>
     </div>
@@ -14,11 +14,11 @@
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
-    page: {
+    currentPage: {
         type: Number,
         default: 1,
     },
-    pages: {
+    totalPage: {
         type: Number,
         default: 0,
     },
