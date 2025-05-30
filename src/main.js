@@ -5,7 +5,6 @@ import router from './router';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
-import 'flatpickr/dist/flatpickr.min.css';
 import '@/assets/styles/bootstrap.css';
 
 const app = createApp(App);
