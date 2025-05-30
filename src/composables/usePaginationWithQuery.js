@@ -1,5 +1,5 @@
 import { usePagination } from '@/composables/usePagination';
-import { watch, onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 export const usePaginationWithQuery = (paginationData, perPageSize) => {

@@ -33,7 +33,7 @@
             </div>
             <div class="mb-3" v-if="user.role === 'guest'">
                 <label class="form-label" for="expiryDate">有効期限</label>
-                <Flatpickr class="form-control" id="expiryDate" v-model="user.expiryDate" placeholder="YYYY-MM-DD" />
+                <DatePickr class="form-control" id="expiryDate" v-model="user.expiryDate" placeholder="YYYY-MM-DD" />
                 <Message :error="message.expiryDate?.error" />
             </div>
             <div class="d-flex justify-content-end gap-3">
@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useLoading } from '@/composables/useLoading';
 import { useAlert } from '@/composables/useAlert';
@@ -56,7 +56,7 @@ import { formatDate } from '@/utils/formatDateTime';
 import api from '@/services/api';
 import Message from '@/components/Message';
 import Alert from '@/components/Alert';
-import Flatpickr from '@/components/Flatpickr';
+import DatePickr from '@/components/DatePickr';
 
 const route = useRoute();
 const router = useRouter();

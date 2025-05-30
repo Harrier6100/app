@@ -1,31 +1,43 @@
 <template>
-    <input ref="flatpickrInput" :value="modelValue">
+    <input ref="inputRef" :value="modelValue">
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, defineEmits } from 'vue';
+import { ref, onMounted, watch, defineProps, defineEmits } from 'vue';
 import flatpickr from 'flatpickr';
 import { Japanese } from 'flatpickr/dist/l10n/ja.js';
+import 'flatpickr/dist/flatpickr.min.css's;
 
 const props = defineProps({
     modelValue: String,
     format: {
         type: String,
-        default: 'Y-m-d',
+        default: 'Y-m-d H:i',
     },
 });
 const emit = defineEmits(['update:modelValue']);
-const flatpickrInput = ref(null);
+const inputRef = ref(null);
+let fpInstance = null;
 
 onMounted(() => {
-    flatpickr(flatpickrInput.value, {
+    fpInstance = flatpickr(inputRef.value, {
+        enableTime: true,
+        time_24hr: true,
+        minuteIncrement: 1,
         dateFormat: props.format,
         allowInput: true,
         locale: Japanese,
-        onChange: (_, selectedDate) => {
-            emit('update:modelValue', selectedDate);
+        defaultDate: props.modelValue,
+        onChange: (selectedDates, dateStr) => {
+            emit('update:modelValue', dateStr);
         },
     });
+});
+
+watch(() => props.modelValue, (newValue) => {
+    if (fpInstance) {
+        fpInstance.setDate(newValue, false);
+    }
 });
 </script>
 

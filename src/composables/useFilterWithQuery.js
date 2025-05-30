@@ -1,5 +1,5 @@
 import { useFilter } from '@/composables/useFilter';
-import { watch, onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { debounce } from 'lodash';
 

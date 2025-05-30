@@ -1,5 +1,5 @@
 import { useSort } from '@/composables/useSort';
-import { watch, onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 export const useSortWithQuery = (sortData) => {
