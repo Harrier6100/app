@@ -1,24 +1,23 @@
 import { ref } from 'vue';
 
-export const useOpenClose = () => {
+export const useModal = () => {
     const isOpen = ref(false);
+    const payload = ref(null);
 
-    const open = () => {
+    const open = (data = null) => {
+        payload.value = data;
         isOpen.value = true;
     };
 
     const close = () => {
+        payload.value = null;
         isOpen.value = false;
-    };
-
-    const toggle = () => {
-        isOpen.value = !isOpen.value;
     };
 
     return {
         isOpen,
+        payload,
         open,
         close,
-        toggle,
     };
 };

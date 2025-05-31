@@ -46,6 +46,7 @@
             @nextPage="nextPage"
         />
     </div>
+    <Confirm />
     <Alert :alerts="alerts"
         @removeAlert="removeAlert"
     />
@@ -54,6 +55,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useConfirmStore } from '@/stores/useConfirmStore';
 import { useLoading } from '@/composables/useLoading';
 import { useAlert } from '@/composables/useAlert';
 import { useFilterWithQuery } from '@/composables/useFilterWithQuery'
@@ -61,11 +63,13 @@ import { useSortWithQuery } from '@/composables/useSortWithQuery';
 import { usePaginationWithQuery } from '@/composables/usePaginationWithQuery';
 import { formatDate, formatAt } from '@/utils/formatDateTime';
 import api from '@/services/api';
+import Confirm from '@/components/Confirm';
 import Alert from '@/components/Alert';
 import Pagination from '@/components/Pagination';
 
 const route = useRoute();
 const router = useRouter();
+const confirm = useConfirmStore();
 const { isLoading, startLoading, stopLoading} = useLoading();
 const { alerts, addAlert, removeAlert } = useAlert();
 const users = ref([]);
@@ -109,7 +113,8 @@ const updateUser = (id) => {
 };
 
 const removeUser = async (id) => {
-    if (!window.confirm('削除しますか？')) return;
+    const result = await confirm.open('削除しますか？')
+    if (!result) return;
 
     try {
         startLoading();

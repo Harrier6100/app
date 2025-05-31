@@ -1,25 +1,32 @@
 import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
 import api from '@/services/api';
 
-export const useUserStore = defineStore('user', {
-    state: () => ({
-        user: null,
-    }),
-    actions: {
-        async fetchUser() {
-            try {
-                const response = await api.get('/api/profile');
-                this.user = response.data;
-            } catch (error) {
-                console.error(error);
-                this.user = null;
-            }
-        },
-        clearUser() {
-            this.user = null;
-        },
-    },
-    getters: {
-        userName: (state) => state.user?.name ?? '',
-    },
+export const useUserStore = defineStore('user', () => {
+    const user = ref(null);
+
+    const fetchUser = async () => {
+        try {
+            const response = await api.get('/api/profile');
+            user.value = response.data;
+        } catch (error) {
+            console.error(error);
+            user.value = null;
+        }
+    };
+
+    const clearUser = () => {
+        user.value = null;
+    };
+
+    const userName = computed(() => {
+        return user.value?.name ?? '';
+    });
+
+    return {
+        user,
+        fetchUser,
+        clearUser,
+        userName,
+    };
 });

@@ -20,14 +20,14 @@
 <script setup>
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useUserStore } from '@/stores/useUserStore';
-import { useOpenClose } from '@/composables/useOpenClose';
+import { useModal } from '@/composables/useModal';
 import Signin from '@/components/Signin';
 import Profile from '@/components/Profile';
 
 const auth = useAuthStore();
 const user = useUserStore();
-const signin = useOpenClose();
-const profile = useOpenClose();
+const signin = useModal();
+const profile = useModal();
 
 const signout = () => {
     if (!window.confirm('サインアウトしますか？')) return;

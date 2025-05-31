@@ -20,7 +20,8 @@
                                 <Message :error="message.password?.error" />
                             </div>
                             <div class="d-flex justify-content-end">
-                                <button class="btn btn-primary" type="submit" :disables="isLoading">サインイン</button>
+                                <button class="btn btn-primary" type="submit" :disabled="isLoading">サインイン</button>
+                                {{ isLoading }}
                             </div>
                         </form>
                         <Message :error="message.app?.error" />
