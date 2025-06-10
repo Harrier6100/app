@@ -40,12 +40,14 @@
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';
 import { useLoading } from '@/composables/useLoading';
+import { useAuth } from '@/composables/useAuth';
 import Message from '@/components/Message.vue';
 
 const props = defineProps({
     isOpen: Boolean,
 });
 const emit = defineEmits(['close']);
+const auth = useAuth();
 const { isLoading, startLoading, stopLoading } = useLoading();
 const message = ref({});
 
@@ -84,6 +86,7 @@ const signin = async () => {
 
     try {
         startLoading();
+        await auth.signin(credentials.value);
         close();
     } catch (error) {
         message.value.form.error = error.message;

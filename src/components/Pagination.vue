@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex justify-content-end" v-if="props.page !== props.pageLength">
+    <div class="d-flex justify-content-end" v-if="props.pageLength !== 0">
         <button class="btn btn-link text-decoration-none"
             @click="decrement"
             :disabled="props.page === 1"
@@ -17,7 +17,7 @@
         </template>
         <button class="btn btn-link text-decoration-none"
             @click="increment"
-            :disabled="props.page === props.pageLength"
+            :disabled="props.page >= props.pageLength"
         >
             <i class="bi bi-chevron-right"></i>
         </button>

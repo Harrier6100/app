@@ -2,7 +2,7 @@
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <div class="container-fluid">
             <div class="me-auto">
-                <router-link class="navbar-brand" to="/">LINTEC</router-link>
+                <router-link class="navbar-brand" to="/">Brand</router-link>
             </div>
             <UserAuth />
         </div>
