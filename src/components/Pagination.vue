@@ -1,6 +1,8 @@
 <template>
     <div class="d-flex justify-content-end" v-if="props.pageLength !== 0">
-        <button class="btn btn-link text-decoration-none"
+        <button
+            type="button"
+            class="btn btn-link text-decoration-none"
             @click="decrement"
             :disabled="props.page === 1"
         >
@@ -8,14 +10,19 @@
         </button>
         <template v-for="page in pages" :key="page">
             <span v-if="page === '...'">...</span>
-            <button class="btn btn-link text-decoration-none"
+            <button v-if="page !== '...'"
+                type="button"
+                class="btn btn-link text-decoration-none"
                 @click="emit('update:page', page)"
                 :class="{ 'text-dark': page === props.page, 'text-primary': page !== props.page }"
+                :disabled="page === props.page"
             >
                 {{ page }}
             </button>
         </template>
-        <button class="btn btn-link text-decoration-none"
+        <button
+            type="button"
+            class="btn btn-link text-decoration-none"
             @click="increment"
             :disabled="props.page >= props.pageLength"
         >
@@ -59,10 +66,14 @@ const pages = computed(() => {
             pages.push(i);
         }
     } else {
-        if (page <= 3) {
-            pages.push(1, 2, 3, '___', pageLength);
-        } else if (page >= pageLength - 2) {
-            pages.push(1, '...', pageLength - 2, pageLength - 1, pageLength);
+        if (pageLength <= 7) {
+            for (let i=1; i<=pageLength; i++) {
+                pages.push(i);
+            }
+        } else if (page <= 4) {
+            pages.push(1, 2, 3, 4, 5, '...', pageLength);
+        } else if (page >= pageLength - 3) {
+            pages.push(1, '...', pageLength - 4, pageLength - 3, pageLength - 2, pageLength - 1, pageLength);
         } else {
             pages.push(1, '...', page - 1, page, page + 1, '...', pageLength);
         }

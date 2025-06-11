@@ -1,20 +1,10 @@
-import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useLoadingStore } from '@/stores/useLoadingStore';
 
 export const useLoading = () => {
     const loadingStore = useLoadingStore();
-
-    const isLoading = computed(() => {
-        return loadingStore.isLoading;
-    });
-
-    const startLoading = () => {
-        loadingStore.startLoading();
-    };
-
-    const stopLoading = () => {
-        loadingStore.stopLoading();
-    };
+    const { isLoading } = storeToRefs(loadingStore);
+    const { startLoading, stopLoading } = loadingStore;
 
     return {
         isLoading,

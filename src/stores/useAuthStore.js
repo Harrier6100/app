@@ -1,50 +1,61 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { api } from '@/services/api';
+import { useAuthUserStore } from '@/stores/useAuthUserStore';
 
 export const useAuthStore = defineStore('auth', () => {
     const isAuth = ref(false);
+    const authUserStore = useAuthUserStore();
 
-    const signin = async (credentials) => {
+    const login = async (credentials) => {
         try {
-            const response = await api.post(`/api/signin`, credentials);
+            const response = await api.post(`/api/auth/login`, credentials);
             const { token } = response.data;
             localStorage.setItem('token', token);
             isAuth.value = true;
+
+            await authUserStore.fetchAuthUser();
         } catch (error) {
             console.error(error);
             throw error;
         }
     };
 
-    const autoSignin = async () => {
+    const autoLogin = async () => {
         const token = localStorage.getItem('token');
-        if (!token) return;
+        if (!token) {
+            isAuth.value = false;
+            return;
+        }
 
         try {
-            const response = await api.post(`/api/signin/auto`);
+            const response = await api.post(`/api/auth/refresh`);
             const { token: newToken } = response.data;
             localStorage.setItem('token', newToken);
             isAuth.value = true;
+
+            await authUserStore.fetchAuthUser();
         } catch (error) {
-            signout();
+            await logout();
         }
     };
 
-    const signout = async () => {
+    const logout = async () => {
         try {
-            await api.post(`/api/signout`);
+            await api.post(`/api/auth/logout`);
         } catch (error) {
             console.error(error);
         }
         localStorage.removeItem('token');
         isAuth.value = false;
+
+        authUserStore.clearAuthUser();
     };
 
     return {
         isAuth,
-        signin,
-        autoSignin,
-        signout,
+        login,
+        autoLogin,
+        logout,
     };
 });

@@ -2,15 +2,15 @@
     <teleport to="body">
         <div v-if="props.isOpen">
             <div class="modal-backdrop show"></div>
-            <div class="modal show d-block" @click.self="close">
+            <div class="modal show d-block" @click.self="handleClose">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
                             <div class="d-flex justify-content-end">
-                                <button class="btn-close" type="button" @click="close"></button>
+                                <button type="button" class="btn-close" @click="handleClose"></button>
                             </div>
 
-                            <form @submit.prevent="signin" autocomplete="off">
+                            <form @submit.prevent="login" autocomplete="off">
                                 <div class="mb-3">
                                     <label class="form-label" for="id">アカウント</label>
                                     <input class="form-control" type="text" id="id" v-model="credentials.id">
@@ -24,7 +24,7 @@
                                 </div>
 
                                 <div class="d-grid">
-                                    <button class="btn btn-primary" type="submit" @click="signin" :disabled="isLoading">サインイン</button>
+                                    <button type="submit" class="btn btn-primary" @click="handleLogin" :disabled="isLoading">ログイン</button>
                                 </div>
 
                                 <Message :error="message.form?.error" />
@@ -39,6 +39,7 @@
 
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';
+import { useRouter } from 'vue-router';
 import { useLoading } from '@/composables/useLoading';
 import { useAuth } from '@/composables/useAuth';
 import Message from '@/components/Message.vue';
@@ -47,7 +48,8 @@ const props = defineProps({
     isOpen: Boolean,
 });
 const emit = defineEmits(['close']);
-const auth = useAuth();
+const router = useRouter();
+const { login } = useAuth();
 const { isLoading, startLoading, stopLoading } = useLoading();
 const message = ref({});
 
@@ -80,13 +82,17 @@ const Validate = {
     },
 };
 
-const signin = async () => {
+const handleLogin = async () => {
     message.value = { form: {} };
     if (!Validate.run()) return;
 
     try {
         startLoading();
-        await auth.signin(credentials.value);
+        await login(credentials.value);
+        const redirectTo = sessionStorage.getItem('redirectTo');
+        if (redirectTo) {
+            router.push(redirectTo);
+        }
         close();
     } catch (error) {
         message.value.form.error = error.message;
@@ -95,7 +101,7 @@ const signin = async () => {
     }
 };
 
-const close = () => {
+const handleClose = () => {
     message.value = {};
     credentials.value = credentialsRestore();
     emit('close');

@@ -4,11 +4,11 @@
             <div class="me-auto">
                 <router-link class="navbar-brand" to="/">Brand</router-link>
             </div>
-            <UserAuth />
+            <Auth />
         </div>
     </nav>
 </template>
 
 <script setup>
-import UserAuth from '@/components/UserAuth.vue';
+import Auth from '@/components/Auth.vue';
 </script>

@@ -8,8 +8,8 @@
                         <div class="modal-body">
                             <p>{{ message }}</p>
                             <div class="d-flex justify-content-end gap-3">
-                                <button class="btn btn-secondary" @click="confirmNo">キャンセル</button>
-                                <button class="btn btn-primary" @click="confirmYes">OK</button>
+                                <button type="button" class="btn btn-secondary" @click="confirmNo">キャンセル</button>
+                                <button type="button" class="btn btn-primary" @click="confirmYes">OK</button>
                             </div>
                         </div>
                     </div>

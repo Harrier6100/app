@@ -11,8 +11,8 @@
                     {{ toast.message }}
                 </div>
                 <button
-                    class="btn-close btn-close-white me-2 m-auto"
                     type="button"
+                    class="btn-close btn-close-white me-2 m-auto"
                     @click="removeToast(toast.id)"></button>
             </div>
         </div>

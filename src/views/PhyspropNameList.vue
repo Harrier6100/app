@@ -1,20 +1,16 @@
 <template>
-    <h6 class="mb-3">アカウント</h6>
+    <h6 class="mb-3">物性名</h6>
 
     <div class="d-flex justify-content-between mb-3">
         <input class="form-control w-25" type="text" v-model="search" placeholder="検索">
-        <button type="button" class="btn btn-primary" @click="addUser">新規作成</button>
+        <button type="button" class="btn btn-primary" @click="addPhyspropName">新規作成</button>
     </div>
 
     <table class="table table-hover">
         <thead>
             <tr>
-                <th :class="['fw-normal', orderBy('id')]" @click="sortBy('id')">アカウント</th>
-                <th :class="['fw-normal', orderBy('name')]" @click="sortBy('name')">名前</th>
-                <th :class="['fw-normal', orderBy('email')]" @click="sortBy('email')">メールアドレス</th>
-                <th :class="['fw-normal', orderBy('role')]" @click="sortBy('role')">役割</th>
-                <th :class="['fw-normal', orderBy('expiryDate')]" @click="sortBy('expiryDate')">有効期限</th>
-                <th :class="['fw-normal', orderBy('isActive')]" @click="sortBy('isActive')">状態</th>
+                <th :class="['fw-normal', orderBy('code')]" @click="sortBy('id')">物性コード</th>
+                <th :class="['fw-normal', orderBy('name')]" @click="sortBy('name')">物性名</th>
                 <th :class="['fw-normal', orderBy('createdAt')]" @click="sortBy('createdAt')">作成日時</th>
                 <th :class="['fw-normal', orderBy('createdBy')]" @click="sortBy('createdBy')">作成者</th>
                 <th :class="['fw-normal', orderBy('updatedAt')]" @click="sortBy('updatedAt')">更新日時</th>
@@ -23,21 +19,17 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="user in paginatedData" :key="user.id">
-                <td class="text-start">{{ user.id }}</td>
-                <td class="text-start">{{ user.name }}</td>
-                <td class="text-start">{{ user.email }}</td>
-                <td class="text-start">{{ user.role }}</td>
-                <td class="text-start">{{ formatDate(user.expiryDate) }}</td>
-                <td class="text-start">{{ user.isActive ? '有効' : '無効' }}</td>
-                <td class="text-start">{{ formatAt(user.createdAt) }}</td>
-                <td class="text-start">{{ user.createdBy }}</td>
-                <td class="text-start">{{ formatAt(user.updatedAt) }}</td>
-                <td class="text-start">{{ user.updatedBy }}</td>
+            <tr v-for="physpropName in paginatedData" :key="physpropName.code">
+                <td class="text-start">{{ physpropName.code }}</td>
+                <td class="text-start">{{ physpropName.name }}</td>
+                <td class="text-start">{{ formatAt(physpropName.createdAt) }}</td>
+                <td class="text-start">{{ physpropName.createdBy }}</td>
+                <td class="text-start">{{ formatAt(physpropName.updatedAt) }}</td>
+                <td class="text-start">{{ physpropName.updatedBy }}</td>
                 <td class="text-start">
                     <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn btn-link text-decoration-none text-dark p-0" @click="updateUser(user.id)">編集</button>
-                        <button type="button" class="btn btn-link text-decoration-none text-dark p-0" @click="removeUser(user.id)">削除</button>
+                        <button type="button" class="btn btn-link text-decoration-none text-dark p-0" @click="updatePhyspropName(physpropName.code)">編集</button>
+                        <button type="button" class="btn btn-link text-decoration-none text-dark p-0" @click="removePhyspropName(physpropName.code)">削除</button>
                     </div>
                 </td>
             </tr>
@@ -75,20 +67,20 @@ const { isLoading, startLoading, stopLoading } = useLoading();
 const { confirm } = useConfirm();
 const { toasts, addToast, removeToast } = useToast();
 
-const users = ref([]);
-const { search, filteredData } = useFilter(users);
+const physpropNames = ref([]);
+const { search, filteredData } = useFilter(physpropNames);
 const { sortedData, sortBy, orderBy } = useSort(filteredData);
 const { page, pageLength, paginatedData } = usePagination(sortedData, 10);
 
 onMounted(() => {
-    fetchUsers();
+    fetchPhyspropNames();
 });
 
-const fetchUsers = async () => {
+const fetchPhyspropNames = async () => {
     try {
         startLoading();
-        const response = await api.get(`/api/users`);
-        users.value = response.data;
+        const response = await api.get(`/api/physprop/names`);
+        physpropNames.value = response.data;
     } catch (error) {
         addToast(error.message, 'error');
     } finally {
@@ -96,34 +88,34 @@ const fetchUsers = async () => {
     }
 };
 
-const addUser = () => {
+const addPhyspropName = () => {
     router.push({
-        name: 'UserAdd',
+        name: 'PhyspropNameAdd',
         state: {
             routeQuery: route.query,
         },
     });
 };
 
-const updateUser = (id) => {
+const updatePhyspropName = (code) => {
     router.push({
-        name: 'UserEdit',
-        params: { id },
+        name: 'PhyspropNameEdit',
+        params: { code },
         state: {
             routeQuery: route.query,
         },
     });
 };
 
-const removeUser = async (id) => {
+const removePhyspropName = async (code) => {
     const confirmed = await confirm('削除しますか？');
     if (!confirmed) return;
 
     try {
         startLoading();
-        await api.delete(`/api/users/${id}`);
-        addToast('アカウントを削除しました。', 'success');
-        await fetchUsers();
+        await api.delete(`/api/physprop/names/${code}`);
+        addToast('物資コードを削除しました。', 'success');
+        await fetchPhyspropNames();
     } catch (error) {
         addToast(error.message, 'error');
     } finally {
