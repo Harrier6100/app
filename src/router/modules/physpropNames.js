@@ -7,20 +7,20 @@ export const physpropNameRoutes = [
             requiresAuth: true,
         },
     },
-    // {
-    //     path: '/users/add',
-    //     name: 'UserAdd',
-    //     component: () => import('@/views/UserEdit.vue'),
-    //     meta: {
-    //         requiresAuth: true,
-    //     },
-    // },
-    // {
-    //     path: '/users/:id',
-    //     name: 'UserEdit',
-    //     component: () => import('@/views/UserEdit.vue'),
-    //     meta: {
-    //         requiresAuth: true,
-    //     },
-    // },
+    {
+        path: '/physprop/names/add',
+        name: 'PhyspropNameAdd',
+        component: () => import('@/views/PhyspropNameEdit.vue'),
+        meta: {
+            requiresAuth: true,
+        },
+    },
+    {
+        path: '/physprop/names/:code',
+        name: 'PhyspropNameEdit',
+        component: () => import('@/views/PhyspropNameEdit.vue'),
+        meta: {
+            requiresAuth: true,
+        },
+    },
 ];

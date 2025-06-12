@@ -1,17 +1,27 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { useAuth } from '@/composables/useAuth';
+import { settingRoutes } from './modules/settings';
 import { userRoutes } from './modules/users';
 import { physpropNameRoutes } from './modules/physpropNames';
-import { useAuth } from '@/composables/useAuth';
 
 const routes = [
     {
-        path: '/setting',
-        name: 'Setting',
-        component: () => import('@/views/Setting.vue'),
+        path: '/',
+        name: 'Home',
+        component: () => import('@/views/Home.vue'),
         meta: {
-            requiresAuth: true,
+            requiresAuth: false,
         },
     },
+    {
+        path: '/error',
+        name: 'Error',
+        component: () => import('@/views/Error.vue'),
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    ...settingRoutes,
     ...userRoutes,
     ...physpropNameRoutes,
 ];
@@ -22,11 +32,15 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    const { isAuth, autoLogin } = useAuth();
+    const { isAuth, authAutoLogin } = useAuth();
+
+    if (to.path === '/error') {
+        return next();
+    }
 
     if (!isAuth.value) {
         try {
-            await autoLogin();
+            await authAutoLogin();
         } catch (error) {
             return next('/error');
         }

@@ -2,12 +2,12 @@
     <teleport to="body">
         <div v-if="props.isOpen">
             <div class="modal-backdrop show"></div>
-            <div class="modal show d-block" @click.self="handleClose">
+            <div class="modal show d-block" @click.self="close">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
                             <div class="d-flex justify-content-end">
-                                <button type="button" class="btn-close" @click="handleClose"></button>
+                                <button type="button" class="btn-close" @click="close"></button>
                             </div>
 
                             <form @submit.prevent="login" autocomplete="off">
@@ -24,7 +24,7 @@
                                 </div>
 
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary" @click="handleLogin" :disabled="isLoading">ログイン</button>
+                                    <button type="submit" class="btn btn-primary" @click="login" :disabled="isLoading">ログイン</button>
                                 </div>
 
                                 <Message :error="message.form?.error" />
@@ -49,7 +49,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['close']);
 const router = useRouter();
-const { login } = useAuth();
+const { authLogin } = useAuth();
 const { isLoading, startLoading, stopLoading } = useLoading();
 const message = ref({});
 
@@ -82,18 +82,19 @@ const Validate = {
     },
 };
 
-const handleLogin = async () => {
+const login = async () => {
     message.value = { form: {} };
     if (!Validate.run()) return;
 
     try {
         startLoading();
-        await login(credentials.value);
+        await authLogin(credentials.value);
+        close();
         const redirectTo = sessionStorage.getItem('redirectTo');
         if (redirectTo) {
+            sessionStorage.removeItem('redirectTo');
             router.push(redirectTo);
         }
-        close();
     } catch (error) {
         message.value.form.error = error.message;
     } finally {
@@ -101,7 +102,7 @@ const handleLogin = async () => {
     }
 };
 
-const handleClose = () => {
+const close = () => {
     message.value = {};
     credentials.value = credentialsRestore();
     emit('close');

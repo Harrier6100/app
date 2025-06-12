@@ -1,7 +1,7 @@
 <template>
     <h6 class="mb-3">アカウント</h6>
 
-    <form @submit.prevent="handleSave" autocomplete="off">
+    <form @submit.prevent="save" autocomplete="off">
         <div class="mb-3">
             <label class="form-label" for="id">アカウント</label>
             <input class="form-control" type="text" id="id" v-model="user.id">
@@ -52,7 +52,7 @@
         </div>
 
         <div class="d-flex justify-content-end gap-3">
-            <button type="button" class="btn btn-secondary" @click="handleCancel">キャンセル</button>
+            <button type="button" class="btn btn-secondary" @click="cancel">キャンセル</button>
             <button type="submit" class="btn btn-primary" :disabled="isLoading">保存</button>
         </div>
     </form>
@@ -151,7 +151,7 @@ const Validate = {
     },
 };
 
-const handleSave = async () => {
+const save = async () => {
     message.value = {};
     if (!Validate.run()) {
         addToast('入力内容に誤りがあります。', 'error');
@@ -175,7 +175,7 @@ const handleSave = async () => {
     }
 };
 
-const handleCancel = () => {
+const cancel = () => {
     router.push({
         name: 'UserList',
         query: window.history.state?.routeQuery,

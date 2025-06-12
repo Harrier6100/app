@@ -9,12 +9,17 @@
             <i class="bi bi-chevron-left"></i>
         </button>
         <template v-for="page in pages" :key="page">
-            <span v-if="page === '...'">...</span>
-            <button v-if="page !== '...'"
+            <button v-if="page === '...'"
                 type="button"
                 class="btn btn-link text-decoration-none"
+                :disabled="true"
+            >
+                ...
+            </button>
+            <button v-if="page !== '...'"
+                type="button"
+                :class="['btn', 'btn-link', 'text-decoration-none', page === props.page ? 'text-dark' : 'text-primary' ]"
                 @click="emit('update:page', page)"
-                :class="{ 'text-dark': page === props.page, 'text-primary': page !== props.page }"
                 :disabled="page === props.page"
             >
                 {{ page }}

@@ -7,7 +7,7 @@ export const useAuthStore = defineStore('auth', () => {
     const isAuth = ref(false);
     const authUserStore = useAuthUserStore();
 
-    const login = async (credentials) => {
+    const authLogin = async (credentials) => {
         try {
             const response = await api.post(`/api/auth/login`, credentials);
             const { token } = response.data;
@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
-    const autoLogin = async () => {
+    const authAutoLogin = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
             isAuth.value = false;
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
-    const logout = async () => {
+    const authLogout = async () => {
         try {
             await api.post(`/api/auth/logout`);
         } catch (error) {
@@ -54,8 +54,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     return {
         isAuth,
-        login,
-        autoLogin,
-        logout,
+        authLogin,
+        authAutoLogin,
+        authLogout,
     };
 });

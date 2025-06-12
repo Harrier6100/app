@@ -1,25 +1,26 @@
 <template>
     <template v-if="isAuth">
-        <button type="button" class="btn btn-primary position-relative">
-            <i class="bi bi-bell"></i>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
-        </button>
-        <button type="button" class="btn btn-primary">
+        <div class="text-white ms-3" role="button">
+            <div class="position-relative">
+                <i class="bi bi-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
+            </div>
+        </div>
+        <router-link class="text-white ms-3" to="/setting">
             <i class="bi bi-gear"></i>
-        </button>
-        <button type="button" class="btn btn-primary" @click="handleLogout">
-            <i class="bi bi-person-circle"></i>
-            {{ authUserName }}
-        </button>
+        </router-link>
+        <div class="text-white ms-3" role="button" @click="logout">
+            <i class="bi bi-person-circle me-1"></i>{{ authUserName }}
+        </div>
     </template>
      <template v-if="!isAuth">
-        <button type="button" class="btn btn-primary" @click="loginModal.open">
-            <i class="bi bi-person-circle"></i>
-        </button>
-        <Login :isOpen="loginModal.isOpen.value"
-            @close="loginModal.close"
-        />
+        <div class="text-white ms-3" role="button" @click="openLogin">
+            <i class="bi bi-person-circle me-1"></i>ログイン
+        </div>
     </template>
+    <Login :isOpen="isOpenLogin"
+        @close="closeLogin"
+    />
 </template>
 
 <script setup>
@@ -32,15 +33,15 @@ import Login from '@/components/Login.vue';
 
 const router = useRouter();
 const { confirm } = useConfirm();
-const { isAuth, logout } = useAuth();
+const { isAuth, authLogout } = useAuth();
 const { authUserName } = useAuthUser();
-const loginModal = useModal();
+const { isOpen: isOpenLogin, open: openLogin, close: closeLogin } = useModal();
 
-const handleLogout = async () => {
+const logout = async () => {
     const confirmed = await confirm('ログアウトしますか？');
     if (!confirmed) return;
 
-    logout();
-    // router.push({ name: 'Home' });
+    await authLogout();
+    router.push('/');
 };
 </script>
