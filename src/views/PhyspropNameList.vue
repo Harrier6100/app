@@ -1,5 +1,5 @@
 <template>
-    <h6 class="mb-3">物性名</h6>
+    <div class="mb-3">物性マスタ</div>
 
     <div class="d-flex justify-content-between mb-3">
         <input class="form-control w-25" type="text" v-model="search" placeholder="検索">
@@ -9,7 +9,7 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th :class="['fw-normal', orderBy('code')]" @click="sortBy('id')">物性コード</th>
+                <th :class="['fw-normal', orderBy('code')]" @click="sortBy('code')">物性コード</th>
                 <th :class="['fw-normal', orderBy('name')]" @click="sortBy('name')">物性名</th>
                 <th :class="['fw-normal', orderBy('createdAt')]" @click="sortBy('createdAt')">作成日時</th>
                 <th :class="['fw-normal', orderBy('createdBy')]" @click="sortBy('createdBy')">作成者</th>
@@ -28,8 +28,8 @@
                 <td class="text-start">{{ physpropName.updatedBy }}</td>
                 <td class="text-start">
                     <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn btn-link text-decoration-none text-dark p-0" @click="updatePhyspropName(physpropName.code)">編集</button>
-                        <button type="button" class="btn btn-link text-decoration-none text-dark p-0" @click="removePhyspropName(physpropName.code)">削除</button>
+                        <button class="btn btn-link text-decoration-none text-dark p-0" type="button" @click="updatePhyspropName(physpropName.code)">編集</button>
+                        <button class="btn btn-link text-decoration-none text-dark p-0" type="button" @click="removePhyspropName(physpropName.code)">削除</button>
                     </div>
                 </td>
             </tr>
@@ -41,31 +41,31 @@
         :pageLength="pageLength"
     />
 
-    <Toast v-if="toasts.length"
-        :toasts="toasts"
-        @removeToast="removeToast"
+    <Alert v-if="alerts.length"
+        :alerts="alerts"
+        @removeAlert="removeAlert"
     />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { api } from '@/services/api';
-import { useLoading } from '@/composables/useLoading';
 import { useConfirm } from '@/composables/useConfirm';
-import { useToast } from '@/composables/useToast';
+import { useLoading } from '@/composables/useLoading';
+import { useAlert } from '@/composables/useAlert';
 import { useFilter } from '@/composables/useFilterWithQuery';
 import { useSort } from '@/composables/useSortWithQuery';
 import { usePagination } from '@/composables/usePaginationWithQuery';
+import { api } from '@/services/api';
 import { formatDate, formatAt } from '@/utils/formatDateTime';
-import Toast from '@/components/Toast.vue';
+import Alert from '@/components/Alert.vue';
 import Pagination from '@/components/Pagination.vue';
 
 const route = useRoute();
 const router = useRouter();
-const { isLoading, startLoading, stopLoading } = useLoading();
 const { confirm } = useConfirm();
-const { toasts, addToast, removeToast } = useToast();
+const { isLoading, startLoading, stopLoading } = useLoading();
+const { alerts, addAlert, removeAlert } = useAlert();
 
 const physpropNames = ref([]);
 const { search, filteredData } = useFilter(physpropNames);
@@ -82,7 +82,7 @@ const fetchPhyspropNames = async () => {
         const response = await api.get(`/api/physprop/names`);
         physpropNames.value = response.data;
     } catch (error) {
-        addToast(error.message, 'error');
+        addAlert(error.message, 'error');
     } finally {
         stopLoading();
     }
@@ -114,10 +114,10 @@ const removePhyspropName = async (code) => {
     try {
         startLoading();
         await api.delete(`/api/physprop/names/${code}`);
-        addToast('物資コードを削除しました。', 'success');
+        addAlert('物資コードを削除しました。', 'success');
         await fetchPhyspropNames();
     } catch (error) {
-        addToast(error.message, 'error');
+        addAlert(error.message, 'error');
     } finally {
         stopLoading();
     }

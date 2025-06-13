@@ -26,16 +26,16 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useConfirm } from '@/composables/useConfirm';
+import { useModal } from '@/composables/useModal';
 import { useAuth } from '@/composables/useAuth';
 import { useAuthUser } from '@/composables/useAuthUser';
-import { useModal } from '@/composables/useModal';
 import Login from '@/components/Login.vue';
 
 const router = useRouter();
 const { confirm } = useConfirm();
+const { isOpen: isOpenLogin, open: openLogin, close: closeLogin } = useModal();
 const { isAuth, authLogout } = useAuth();
 const { authUserName } = useAuthUser();
-const { isOpen: isOpenLogin, open: openLogin, close: closeLogin } = useModal();
 
 const logout = async () => {
     const confirmed = await confirm('ログアウトしますか？');

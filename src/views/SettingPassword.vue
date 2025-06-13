@@ -19,27 +19,28 @@
         </div>
 
         <div class="d-flex justify-content-end">
-            <button class="btn btn-primary" :disabled="isLoading">保存</button>
+            <button class="btn btn-primary" type="submit" :disabled="isLoading">保存</button>
         </div>
     </form>
 
-    <Toast v-if="toasts.length"
-        :toasts="toasts"
-        @removeToast="removeToast"
+    <Alert v-if="alerts.length"
+        :alerts="alerts"
+        @removeAlert="removeAlert"
     />
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { api } from '@/services/api';
 import { useLoading } from '@/composables/useLoading';
-import { useToast } from '@/composables/useToast';
-import Toast from '@/components/Toast.vue';
+import { useMessage } from '@/composables/useMessage';
+import { useAlert } from '@/composables/useAlert';
+import { api } from '@/services/api';
 import Message from '@/components/Message.vue';
+import Alert from '@/components/Alert.vue';
 
 const { isLoading, startLoading, stopLoading } = useLoading();
-const { toasts, addToast, removeToast } = useToast();
-const message = ref({});
+const { message, clearMessage } = useMessage();
+const { alerts, addAlert, removeAlert } = useAlert();
 
 const settingRestore = () => ({
     password: '',
@@ -59,7 +60,7 @@ const Validate = ({
         if (!setting.value.password) {
             message.value.password.error = 'パスワードを入力してください。';
         }
-        return !message.value.password?.error;
+        return !message.value.password.error;
     },
     passwordConfirm() {
         message.value.passwordConfirm = {};
@@ -68,24 +69,24 @@ const Validate = ({
         } else if (setting.value.password !== setting.value.passwordConfirm) {
             message.value.passwordConfirm.error = 'パスワードとパスワード（再入力）が一致しません。';
         }
-        return !message.value.passwordConfirm?.error;
+        return !message.value.passwordConfirm.error;
     },
 });
 
 const save = async () => {
-    message.value = {};
+    clearMessage();
     if (!Validate.run()) {
-        addToast('入力内容に誤りがあります。', 'error');
+        addAlert('入力内容に誤りがあります。', 'error');
         return;
     }
 
     try {
         startLoading();
         await api.put(`/api/auth/me/password`, setting.value);
-        addToast('パスワードを変更しました。', 'success');
+        addAlert('パスワードを変更しました。', 'success');
         setting.value = settingRestore();
     } catch (error) {
-        addToast(error.message, 'error');
+        addAlert(error.message, 'error');
     } finally {
         stopLoading();
     }

@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
-import { settingRoutes } from './modules/settings';
-import { userRoutes } from './modules/users';
-import { physpropNameRoutes } from './modules/physpropNames';
+import { settingRoutes } from './modules/settingRoutes';
+import { userRoutes } from './modules/userRoutes';
+import { physpropNameRoutes } from './modules/physpropNameRoutes';
+import { physpropSpecRoutes } from './modules/physpropSpecRoutes';
 
 const routes = [
     {
@@ -24,6 +25,7 @@ const routes = [
     ...settingRoutes,
     ...userRoutes,
     ...physpropNameRoutes,
+    ...physpropSpecRoutes,
 ];
 
 const router = createRouter({

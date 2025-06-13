@@ -7,7 +7,7 @@
                     <div class="modal-content">
                         <div class="modal-body">
                             <div class="d-flex justify-content-end">
-                                <button type="button" class="btn-close" @click="close"></button>
+                                <button class="btn-close" type="button" @click="close"></button>
                             </div>
 
                             <form @submit.prevent="login" autocomplete="off">
@@ -24,7 +24,7 @@
                                 </div>
 
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary" @click="login" :disabled="isLoading">ログイン</button>
+                                    <button class="btn btn-primary" type="submit" @click="login" :disabled="isLoading">ログイン</button>
                                 </div>
 
                                 <Message :error="message.form?.error" />
@@ -41,6 +41,7 @@
 import { ref, defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLoading } from '@/composables/useLoading';
+import { useMessage } from '@/composables/useMessage';
 import { useAuth } from '@/composables/useAuth';
 import Message from '@/components/Message.vue';
 
@@ -49,9 +50,9 @@ const props = defineProps({
 });
 const emit = defineEmits(['close']);
 const router = useRouter();
-const { authLogin } = useAuth();
 const { isLoading, startLoading, stopLoading } = useLoading();
-const message = ref({});
+const { message, clearMessage } = useMessage();
+const { authLogin } = useAuth();
 
 const credentialsRestore = () => ({
     id: '',
@@ -71,19 +72,19 @@ const Validate = {
         if (!credentials.value.id) {
             message.value.id.error = 'アカウントを入力してください。';
         }
-        return !message.value.id?.error;
+        return !message.value.id.error;
     },
     password() {
         message.value.password = {};
         if (!credentials.value.password) {
             message.value.password.error = 'パスワードを入力してください。';
         }
-        return !message.value.password?.error;
+        return !message.value.password.error;
     },
 };
 
 const login = async () => {
-    message.value = { form: {} };
+    clearMessage({ form: {} });
     if (!Validate.run()) return;
 
     try {
@@ -103,8 +104,8 @@ const login = async () => {
 };
 
 const close = () => {
-    message.value = {};
     credentials.value = credentialsRestore();
+    clearMessage();
     emit('close');
 };
 </script>

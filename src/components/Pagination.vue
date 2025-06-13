@@ -1,8 +1,8 @@
 <template>
     <div class="d-flex justify-content-end" v-if="props.pageLength !== 0">
         <button
-            type="button"
             class="btn btn-link text-decoration-none"
+            type="button"
             @click="decrement"
             :disabled="props.page === 1"
         >
@@ -10,15 +10,15 @@
         </button>
         <template v-for="page in pages" :key="page">
             <button v-if="page === '...'"
-                type="button"
                 class="btn btn-link text-decoration-none"
+                type="button"
                 :disabled="true"
             >
                 ...
             </button>
             <button v-if="page !== '...'"
-                type="button"
                 :class="['btn', 'btn-link', 'text-decoration-none', page === props.page ? 'text-dark' : 'text-primary' ]"
+                type="button"
                 @click="emit('update:page', page)"
                 :disabled="page === props.page"
             >
@@ -26,8 +26,8 @@
             </button>
         </template>
         <button
-            type="button"
             class="btn btn-link text-decoration-none"
+            type="button"
             @click="increment"
             :disabled="props.page >= props.pageLength"
         >

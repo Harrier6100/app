@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { api } from '@/services/api';
 import { useAuthUserStore } from '@/stores/useAuthUserStore';
+import { api } from '@/services/api';
 
 export const useAuthStore = defineStore('auth', () => {
     const isAuth = ref(false);

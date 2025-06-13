@@ -1,5 +1,5 @@
 <template>
-    <h6 class="mb-3">設定</h6>
+    <div class="mb-3">設定</div>
 
     <div class="border-top">
         <router-link class="text-decoration-none text-dark" to="/setting/profile">

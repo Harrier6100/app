@@ -1,19 +1,19 @@
 <template>
     <div class="toast-container position-fixed bottom-0 start-0 p-3">
         <div
-            v-for="toast in toasts"
-            :key="toast.id"
-            :class="['toast align-items-center text-white bg-opacity-75 border-0 show', toast.color]"
+            v-for="alert in alerts"
+            :key="alert.id"
+            :class="['toast align-items-center text-white bg-opacity-75 border-0 show', alert.color]"
             role="alert"
         >
             <div class="d-flex">
                 <div class="toast-body">
-                    {{ toast.message }}
+                    {{ alert.message }}
                 </div>
                 <button
-                    type="button"
                     class="btn-close btn-close-white me-2 m-auto"
-                    @click="removeToast(toast.id)"></button>
+                    type="button"
+                    @click="removeAlert(alert.id)"></button>
             </div>
         </div>
     </div>
@@ -23,14 +23,14 @@
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
-    toasts: {
+    alerts: {
         type: Array,
         default: () => [],
     },
 });
-const emit = defineEmits(['removeToast']);
+const emit = defineEmits(['removeAlert']);
 
-const removeToast = (id) => {
-    emit('removeToast', id);
+const removeAlert = (id) => {
+    emit('removeAlert', id);
 };
 </script>

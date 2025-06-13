@@ -13,29 +13,30 @@
         </div>
 
         <div class="d-flex justify-content-end">
-            <button class="btn btn-primary" :disabled="isLoading || isChange">保存</button>
+            <button class="btn btn-primary" type="submit" :disabled="isLoading || isChange">保存</button>
         </div>
     </form>
 
-    <Toast v-if="toasts.length"
-        :toasts="toasts"
-        @removeToast="removeToast"
+    <Alert v-if="alerts.length"
+        :alerts="alerts"
+        @removeAlert="removeAlert"
     />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { api } from '@/services/api';
 import { useLoading } from '@/composables/useLoading';
-import { useToast } from '@/composables/useToast';
+import { useMessage } from '@/composables/useMessage';
+import { useAlert } from '@/composables/useAlert';
 import { useAuthUser } from '@/composables/useAuthUser';
-import Toast from '@/components/Toast.vue';
+import { api } from '@/services/api';
+import Alert from '@/components/Alert.vue';
 import Message from '@/components/Message.vue';
 
 const { isLoading, startLoading, stopLoading } = useLoading();
-const { toasts, addToast, removeToast } = useToast();
+const { message, clearMessage } = useMessage();
+const { alerts, addAlert, removeAlert } = useAlert();
 const { authUser, fetchAuthUser } = useAuthUser();
-const message = ref({});
 
 const settingRestore = () => ({
     name: '',
@@ -61,24 +62,24 @@ const Validate = ({
         if (!setting.value.name) {
             message.value.name.error = '名前を入力してください。';
         }
-        return !message.value.name?.error;
+        return !message.value.name.error;
     },
 });
 
 const save = async () => {
-    message.value = {};
+    clearMessage();
     if (!Validate.run()) {
-        addToast('入力内容に誤りがあります。', 'error');
+        addAlert('入力内容に誤りがあります。', 'error');
         return;
     }
 
     try {
         startLoading();
         await api.put(`/api/auth/me`, setting.value);
-        addToast('名前を更新しました。', 'success');
+        addAlert('名前を更新しました。', 'success');
         await fetchAuthUser();
     } catch (error) {
-        addToast(error.message, 'error');
+        addAlert(error.message, 'error');
     } finally {
         stopLoading();
     }

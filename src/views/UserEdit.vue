@@ -1,5 +1,5 @@
 <template>
-    <h6 class="mb-3">アカウント</h6>
+    <div class="mb-3">アカウント</div>
 
     <form @submit.prevent="save" autocomplete="off">
         <div class="mb-3">
@@ -52,33 +52,34 @@
         </div>
 
         <div class="d-flex justify-content-end gap-3">
-            <button type="button" class="btn btn-secondary" @click="cancel">キャンセル</button>
-            <button type="submit" class="btn btn-primary" :disabled="isLoading">保存</button>
+            <button class="btn btn-secondary" type="button" @click="cancel">キャンセル</button>
+            <button class="btn btn-primary" type="submit" :disabled="isLoading">保存</button>
         </div>
     </form>
 
-    <Toast v-if="toasts.length"
-        :toasts="toasts"
-        @removeToast="removeToast"
+    <Alert v-if="alerts.length"
+        :alerts="alerts"
+        @removeAlert="removeAlert"
     />
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { api } from '@/services/api';
 import { useLoading } from '@/composables/useLoading';
-import { useToast } from '@/composables/useToast';
+import { useMessage } from '@/composables/useMessage';
+import { useAlert } from '@/composables/useAlert';
+import { api } from '@/services/api';
 import { formatDate } from '@/utils/formatDateTime';
-import Toast from '@/components/Toast.vue';
+import Alert from '@/components/Alert.vue';
 import Message from '@/components/Message.vue';
 import DatePickr from '@/components/DatePickr.vue';
 
 const route = useRoute();
 const router = useRouter();
 const { isLoading, startLoading, stopLoading } = useLoading();
-const { toasts, addToast, removeToast } = useToast();
-const message = ref({});
+const { message, clearMessage } = useMessage();
+const { alerts, addAlert, removeAlert } = useAlert();
 
 const { id } = route.params;
 const userRestore = () => ({
@@ -114,7 +115,7 @@ const fetchUser = async (id) => {
         user.value.remarks = response.data.remarks;
         user.value.isActive = response.data.isActive;
     } catch (error) {
-        addToast(error.message, 'error');
+        addAlert(error.message, 'error');
     } finally {
         stopLoading();
     }
@@ -133,28 +134,28 @@ const Validate = {
         if (!user.value.id) {
             message.value.id.error = 'アカウントを入力してください。';
         }
-        return !message.value.id?.error;
+        return !message.value.id.error;
     },
     name() {
         message.value.name = {};
         if (!user.value.name) {
             message.value.name.error = '名前を入力してください。';
         }
-        return !message.value.name?.error;
+        return !message.value.name.error;
     },
     expiryDate() {
         message.value.expiryDate = {};
         if (user.value.role === 'guest' && !user.value.expiryDate) {
             message.value.expiryDate.error = 'ゲストアカウントは有効期限が必須です。';
         }
-        return !message.value.expiryDate?.error;
+        return !message.value.expiryDate.error;
     },
 };
 
 const save = async () => {
-    message.value = {};
+    clearMessage();
     if (!Validate.run()) {
-        addToast('入力内容に誤りがあります。', 'error');
+        addAlert('入力内容に誤りがあります。', 'error');
         return;
     }
 
@@ -162,14 +163,14 @@ const save = async () => {
         startLoading();
         if (id) {
             await api.put(`/api/users/${id}`, user.value);
-            addToast('アカウントを更新しました。', 'success');
+            addAlert('アカウントを更新しました。', 'success');
         } else {
             await api.post(`/api/users`, user.value);
-            addToast('アカウントを作成しました。', 'success');
+            addAlert('アカウントを作成しました。', 'success');
             user.value = userRestore();
         }
     } catch (error) {
-        addToast(error.message, 'error');
+        addAlert(error.message, 'error');
     } finally {
         stopLoading();
     }

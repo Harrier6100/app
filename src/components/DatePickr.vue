@@ -16,7 +16,6 @@ const props = defineProps({
     },
 });
 const emit = defineEmits(['update:modelValue']);
-
 const fpRef = ref(null);
 let fpInstance = null;
 
