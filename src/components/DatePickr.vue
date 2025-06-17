@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, defineProps, defineEmits } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import flatpickr from 'flatpickr';
 import { Japanese } from 'flatpickr/dist/l10n/ja';
 import 'flatpickr/dist/flatpickr.min.css';

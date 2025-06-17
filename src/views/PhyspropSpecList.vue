@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="physpropSpec in paginatedData" :key="physpropSpec.code">
+            <tr v-for="(physpropSpec, index) in paginatedData" :key="index">
                 <td class="text-start">{{ physpropSpec.productCode }}</td>
                 <td class="text-start">{{ physpropSpec.productName }}</td>
                 <td class="text-start">{{ physpropSpec.customerCode }}</td>
@@ -32,8 +32,8 @@
                 <td class="text-start">{{ physpropSpec.updatedBy }}</td>
                 <td class="text-start">
                     <div class="d-flex justify-content-center gap-3">
-                        <button class="btn btn-link text-decoration-none text-dark p-0" type="button" @click="updatePhyspropSpec(physpropSpec.code)">編集</button>
-                        <button class="btn btn-link text-decoration-none text-dark p-0" type="button" @click="removePhyspropSpec(physpropSpec.code)">削除</button>
+                        <button class="btn btn-link text-decoration-none text-dark p-0" type="button" @click="updatePhyspropSpec(physpropSpec)">編集</button>
+                        <button class="btn btn-link text-decoration-none text-dark p-0" type="button" @click="removePhyspropSpec(physpropSpec)">削除</button>
                     </div>
                 </td>
             </tr>
@@ -101,10 +101,10 @@ const addPhyspropSpec = () => {
     });
 };
 
-const updatePhyspropSpec = (code) => {
+const updatePhyspropSpec = ({ productCode, customerCode }) => {
     router.push({
         name: 'PhyspropSpecEdit',
-        params: { code },
+        params: { productCode, customerCode },
         state: {
             routeQuery: route.query,
         },

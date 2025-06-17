@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLoading } from '@/composables/useLoading';
 import { useMessage } from '@/composables/useMessage';

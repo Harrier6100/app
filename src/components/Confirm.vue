@@ -3,7 +3,7 @@
         <div v-if="isShow">
             <div class="modal-backdrop show"></div>
             <div class="modal show d-block" @click.self="confirmNo">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-body">
                             <p>{{ message }}</p>
@@ -23,3 +23,9 @@
 import { useConfirm } from '@/composables/useConfirm';
 const { isShow, message, confirmYes, confirmNo } = useConfirm();
 </script>
+
+<style>
+.modal {
+    z-index: 9999;
+}
+</style>

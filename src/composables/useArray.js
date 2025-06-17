@@ -13,10 +13,18 @@ export const useArray = (init = []) => {
         items.value.splice(index + 1, 0, parsedItem);
     };
 
-    const move = (oldIndex, newIndex) => {
-        if (newIndex < 0) return;
-        const [moveItem] = items.value.splice(oldIndex, 1);
-        items.value.splice(newIndex, 0, moveItem);
+    const up = (index) => {
+        if (index > 0 && index < items.value.length) {
+            const [item] = items.value.splice(index, 1);
+            items.value.splice(index - 1, 0, item);
+        }
+    };
+
+    const down = (index) => {
+        if (index >= 0 && index < items.value.length - 1) {
+            const [item] = items.value.splice(index, 1);
+            items.value.splice(index + 1, 0, item);
+        }
     };
 
     const remove = (index) => {
@@ -27,7 +35,8 @@ export const useArray = (init = []) => {
         items,
         add,
         push,
-        move,
+        up,
+        down,
         remove,
     };
 };

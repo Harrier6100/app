@@ -16,7 +16,7 @@ export const physpropSpecRoutes = [
         },
     },
     {
-        path: '/physprop/specs/:code',
+        path: '/physprop/specs/:productCode/:customerCode?',
         name: 'PhyspropSpecEdit',
         component: () => import('@/views/PhyspropSpecEdit.vue'),
         meta: {
