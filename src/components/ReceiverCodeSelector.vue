@@ -2,25 +2,27 @@
     <teleport to="body">
         <div v-if="props.isOpen">
             <div class="modal-backdrop show"></div>
-            <div class="modal show d-block" @click.self="close">
+            <div class="modal d-block show" @click.self="close">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
+                        <div class="modal-header">
+                            <button class="btn-close" @click="close"></button>
+                        </div>
                         <div class="modal-body">
-                            <div class="d-flex justify-content-end mb-3">
-                                <button class="btn-close" type="button" @click="close"></button>
-                            </div>
+                            <Alert v-if="alert.isShow"
+                                :alert="alert"
+                                @close="clearAlert"
+                            />
 
                             <div class="row">
                                 <div class="col-3">
                                     <form @submit.prevent="search" autocomplete="off">
                                         <div class="mb-3">
-                                            <label class="form-label" for="receiverCode">得意先コード</label>
-                                            <input class="form-control" type="text" id="receiverCode" v-model="form.receiverCode">
+                                            <input class="form-control" type="text" id="receiverCode" v-model="form.receiverCode" placeholder="得意先コード">
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label" for="receiverName">得意先名</label>
-                                            <input class="form-control" type="text" id="receiverName" v-model="form.receiverName">
+                                            <input class="form-control" type="text" id="receiverName" v-model="form.receiverName" placeholder="得意先名">
                                         </div>
 
                                         <div class="d-grid">
@@ -34,32 +36,30 @@
                                     <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
-                                                <th :class="['fw-normal', orderBy('receiverCode')]" @click="sortBy('receiverCode')">得意先コード</th>
-                                                <th :class="['fw-normal', orderBy('receiverName')]" @click="sortBy('receiverName')">得意先名</th>
+                                                <th class="fw-normal" :class="orderBy('receiverCode')" @click="sortBy('receiverCode')">得意先コード</th>
+                                                <th class="fw-normal" :class="orderBy('receiverName')" @click="sortBy('receiverName')">得意先名</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(item, index) in paginatedData" :key="index">
+                                            <tr v-for="item in paginatedData" :key="item.receiverCode">
                                                 <td class="text-start">{{ item.receiverCode }}</td>
                                                 <td class="text-start">{{ item.receiverName }}</td>
                                                 <td class="text-start">
                                                     <div class="d-flex justify-content-center">
-                                                        <button class="btn btn-link text-decoration-none text-dark p-0" @click="select(item)">選択</button>
+                                                        <button class="btn btn-link text-decoration-none p-0" @click="select(item)">選択</button>
                                                     </div>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
 
-                                    <pagination
+                                    <Pagination
                                         v-model:page="page"
                                         :pageLength="pageLength"
                                     />
                                 </div>
                             </div>
-
-                            <Message :error="message.error" />
                         </div>
                     </div>
                 </div>
@@ -72,10 +72,10 @@
 import { ref } from 'vue';
 import { api } from '@/services/api';
 import { useLoading } from '@/composables/useLoading'
-import { useMessage } from '@/composables/useMessage';
+import { useAlert } from '@/composables/useAlertNext';
 import { useSort } from '@/composables/useSort';
 import { usePagination } from '@/composables/usePagination';
-import Message from '@/components/Message.vue';
+import Alert from '@/components/AlertNext.vue';
 import Pagination from '@/components/Pagination.vue';
 
 const props = defineProps({
@@ -83,7 +83,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['select', 'close']);
 const { isLoading, startLoading, stopLoading } = useLoading();
-const { message } = useMessage();
+const { alert, setAlert, clearAlert } = useAlert();
 
 const items = ref([]);
 const { sortedData, sortBy, orderBy } = useSort(items);
@@ -96,9 +96,9 @@ const formRestore = () => ({
 const form = ref(formRestore());
 
 const search = async () => {
-    message.value.error = '';
+    clearAlert();
     if (!form.value.receiverCode && !form.value.receiverName) {
-        message.value.error = '検索条件を指定してください。';
+        setAlert('検索条件を指定してください。', 'error');
         return;
     }
 
@@ -106,15 +106,15 @@ const search = async () => {
         startLoading();
         const response = await api.get(`/api/receiver/names/search`, { params: form.value });
         items.value = response.data;
-    } catch (err) {
-        message.value.error = err.message;
+    } catch (error) {
+        setAlert(error.message, 'error');
     } finally {
         stopLoading();
     }
 };
 
-const select = (item) => {
-    emit('select', item);
+const select = (selected) => {
+    emit('select', selected);
     emit('close');
 };
 

@@ -11,7 +11,7 @@
                     {{ alert.message }}
                 </div>
                 <button
-                    class="btn-close btn-close-white me-2 m-auto"
+                    class="btn-close btn-close-white m-auto me-2"
                     type="button"
                     @click="removeAlert(alert.id)"></button>
             </div>

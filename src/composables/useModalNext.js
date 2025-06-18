@@ -5,13 +5,13 @@ export const useModal = () => {
     const _payload = ref(null);
 
     const open = (data = null) => {
-        _payload.value = data;
         _isOpen.value = true;
+        _payload.value = data;
     };
 
     const close = () => {
-        _payload.value = null;
         _isOpen.value = false;
+        _payload.value = null;
     };
 
     return {
