@@ -36,7 +36,7 @@
             </thead>
             <tbody>
                 <tr v-for="(localize, index) in physpropName.localizes" :key="index">
-                    <td style="width: 15%"><input class="form-control" type="text" v-model="localize.lang"></td>
+                    <td style="width: 15%"><input class="form-control" type="text" v-model="localize.lang" readonly></td>
                     <td style="width: 50%"><input class="form-control" type="text" v-model="localize.name"></td>
                     <td style="width: 35%"><input class="form-control" type="text" v-model="localize.uom"></td>
                 </tr>
@@ -100,14 +100,14 @@ onMounted(() => {
     }
 });
 
-watch(() => physpropName.value.codes, (newVal) => {
-    newVal.forEach((val, i) => {
+watch(() => physpropName.value.codes, (codes) => {
+    codes.forEach((val, i) => {
         physpropName.value.codes[i] = val.toUpperCase();
     });
-    if (newVal[0] === 'A') {
-        physpropName.value.code = newVal.slice(0, 4).join('_');
+    if (value[0] === 'A') {
+        physpropName.value.code = codes.slice(0, 4).join('_');
     } else {
-        physpropName.value.code = newVal.join('_');
+        physpropName.value.code = codes.join('_');
     }
 }, { deep: true });
 

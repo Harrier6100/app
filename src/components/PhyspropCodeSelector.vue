@@ -16,35 +16,25 @@
 
                             <div class="row">
                                 <div class="col-3">
-                                    <form @submit.prevent="search" autocomplete="off">
-                                        <div class="mb-3">
-                                            <input class="form-control" type="text" v-model="form.receiverCode" placeholder="得意先コード">
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <input class="form-control" type="text" v-model="form.receiverName" placeholder="得意先名">
-                                        </div>
-
-                                        <div class="d-grid">
-                                            <button class="btn btn-primary" :disabled="isLoading">
-                                                <span v-if="isLoading" class="spinner-border spinner-border-sm me-1"></span>検索
-                                            </button>
-                                        </div>
-                                    </form>
+                                    <input class="form-control" type="text" v-model="search" placeholder="検索">
                                 </div>
                                 <div class="col-9">
                                     <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
-                                                <th class="fw-normal" :class="orderBy('receiverCode')" @click="sortBy('receiverCode')">得意先コード</th>
-                                                <th class="fw-normal" :class="orderBy('receiverName')" @click="sortBy('receiverName')">得意先名</th>
+                                                <th class="fw-normal" :class="orderBy('code')" @click="sortBy('code')">物性コード</th>
+                                                <th class="fw-normal" :class="orderBy('name')" @click="sortBy('name')">物性名</th>
+                                                <th class="fw-normal" :class="orderBy('uom')" @click="sortBy('uom')">単位</th>
+                                                <th class="fw-normal" :class="orderBy('numberSize')" @click="sortBy('numberSize')">ｎ数</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="item in paginatedData" :key="item.receiverCode">
-                                                <td class="text-start">{{ item.receiverCode }}</td>
-                                                <td class="text-start">{{ item.receiverName }}</td>
+                                            <tr v-for="item in paginatedData" :key="item.code">
+                                                <td class="text-start">{{ item.code }}</td>
+                                                <td class="text-start">{{ item.name }}</td>
+                                                <td class="text-start">{{ item.uom }}</td>
+                                                <td class="text-end">{{ item.numberSize }}</td>
                                                 <td class="text-start">
                                                     <div class="d-flex justify-content-center">
                                                         <button class="btn btn-link text-decoration-none p-0" @click="select(item)">選択</button>
@@ -53,13 +43,13 @@
                                             </tr>
                                         </tbody>
                                     </table>
-
-                                    <Pagination
-                                        v-model:page="page"
-                                        :pageLength="pageLength"
-                                    />
                                 </div>
                             </div>
+
+                            <pagination
+                                v-model:page="page"
+                                :pageLength="pageLength"
+                            />
                         </div>
                     </div>
                 </div>
@@ -69,10 +59,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { api } from '@/services/api';
 import { useLoading } from '@/composables/useLoading'
 import { useAlert } from '@/composables/useAlertNext';
+import { useFilter } from '@/composables/useFilter';
 import { useSort } from '@/composables/useSort';
 import { usePagination } from '@/composables/usePagination';
 import Alert from '@/components/AlertNext.vue';
@@ -82,36 +73,29 @@ const props = defineProps({
     isOpen: Boolean,
 });
 const emit = defineEmits(['select', 'close']);
-const { isLoading, startLoading, stopLoading } = useLoading();
+const { startLoading, stopLoading } = useLoading();
 const { alert, setAlert, clearAlert } = useAlert();
 
 const items = ref([]);
-const { sortedData, sortBy, orderBy } = useSort(items);
+const { search, filteredData } = useFilter(items);
+const { sortedData, sortBy, orderBy } = useSort(filteredData);
 const { page, pageLength, paginatedData } = usePagination(sortedData, 10);
 
-const formRestore = () => ({
-    receiverCode: '',
-    receiverName: '',
-});
-const form = ref(formRestore());
-
-const search = async () => {
-    clearAlert();
-    if (!form.value.receiverCode && !form.value.receiverName) {
-        setAlert('検索条件を指定してください。', 'error');
-        return;
-    }
-
+onMounted(async () => {
     try {
         startLoading();
-        const response = await api.get(`/api/receiver/names/search`, { params: form.value });
+        const response = await api.get(`/api/physprop/names`);
         items.value = response.data;
     } catch (error) {
         setAlert(error.message, 'error');
     } finally {
         stopLoading();
     }
-};
+});
+
+watch(search, () => {
+    page.value = 1;
+});
 
 const select = (selected) => {
     emit('select', selected);

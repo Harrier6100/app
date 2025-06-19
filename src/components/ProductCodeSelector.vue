@@ -18,11 +18,11 @@
                                 <div class="col-3">
                                     <form @submit.prevent="search" autocomplete="off">
                                         <div class="mb-3">
-                                            <input class="form-control" type="text" id="productCode" v-model="form.productCode" placeholder="品名コード">
+                                            <input class="form-control" type="text" v-model="form.productCode" placeholder="品名コード">
                                         </div>
 
                                         <div class="mb-3">
-                                            <input class="form-control" type="text" id="productName" v-model="form.productName" placeholder="品名">
+                                            <input class="form-control" type="text" v-model="form.productName" placeholder="品名">
                                         </div>
 
                                         <div class="d-grid">

@@ -1,6 +1,6 @@
 <template>
     <div class="position-relative">
-        <input class="form-control" type="text" v-bind="attrs" v-model="productCode" @change="change">
+        <input class="form-control" type="text" v-bind="attrs" v-model="inputValue" @change="change">
         <a class="position-absolute top-50 end-0 translate-middle-y pe-3" role="button" @click="open">
             <i class="bi bi-search"></i>
         </a>
@@ -27,36 +27,43 @@ const attrs = useAttrs();
 const props = defineProps({
     modelValue: String,
 });
-const emit = defineEmits(['update:modelValue', 'select', 'error', 'syncError']);
+const emit = defineEmits(['update:modelValue', 'select', 'error', 'errorMessage']);
 const { isLoading, startLoading, stopLoading } = useLoading();
 const { isOpen, open, close } = useModal();
-const productCode = ref(props.modelValue);
+const inputValue = ref(props.modelValue);
 
 watch(() => props.modelValue, (value) => {
-    productCode.value = value;
+    inputValue.value = value;
 });
 
-watch(productCode, (value) => {
+watch(inputValue, (value) => {
     emit('update:modelValue', value);
 });
 
 const select = (selected) => {
+    const { productCode } = selected;
+    inputValue.value = productCode;
     emit('select', selected);
+    emit('error', false);
+    emit('errorMessage', '');
 };
 
 const change = async () => {
-    emit('error', '');
-    emit('syncError', false);
-    if (!productCode.value) return;
+    emit('select', {});
+    emit('error', false);
+    emit('errorMessage', '');
+    if (!inputValue.value) return;
 
     try {
         startLoading();
-        const response = await api.get(`/api/product/names/${productCode.value}`);
+        const response = await api.get(`/api/product/names/${inputValue.value}`);
         emit('select', response.data);
-        emit('syncError', false);
+        emit('error', false);
+        emit('errorMessage', '');
     } catch (error) {
-        emit('error', error.message);
-        emit('syncError', true);
+        emit('select', {});
+        emit('error', true);
+        emit('errorMessage', error.message);
     } finally {
         stopLoading();
     }
