@@ -4,6 +4,7 @@ import { settingRoutes } from './modules/settingRoutes';
 import { userRoutes } from './modules/userRoutes';
 import { physpropNameRoutes } from './modules/physpropNameRoutes';
 import { physpropSpecRoutes } from './modules/physpropSpecRoutes';
+import { physpropValueRoutes } from './modules/physpropValueRoutes';
 
 const routes = [
     {
@@ -26,6 +27,7 @@ const routes = [
     ...userRoutes,
     ...physpropNameRoutes,
     ...physpropSpecRoutes,
+    ...physpropValueRoutes,
 ];
 
 const router = createRouter({
