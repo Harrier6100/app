@@ -8,40 +8,47 @@
                 </div>
                 <div class="offcanvas-body overflow-hidden p-0">
                     <div class="position-relative">
-
-                        <template v-if="menu === 'root'">
-                            <div v-for="item in filteredMenus" :key="item.next">
-                                <div class="d-flex flex-row p-3" role="button" @click="pushMenu(item.next)">
-                                    <div class="flex-shrink-0">{{ item.label }}</div>
-                                    <div class="d-flex w-100">
-                                        <i class="bi bi-arrow-right ms-auto"></i>
-                                    </div>
+                        <transition :name="transitionName">
+                            <div class="slide-menu" :key="currentMenu">
+                                <div class="list-group">
+                                    <template v-if="currentMenu === 'topLevel'">
+                                        <template v-for="menu in filteredMenus" :key="menu.submenu">
+                                            <div class="list-group-item list-group-item-action list-group-item-light rounded-0" role="button" @click="pushMenu(menu.submenu)">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>{{ menu.label }}</span>
+                                                    <i class="bi bi-arrow-right"></i>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </template>
+                                    <template v-else>
+                                        <div class="list-group-item list-group-item-action list-group-item-light rounded-0" role="button" @click="popMenu()">
+                                            <div class="d-flex justify-content-start gap-1">
+                                                <i class="bi bi-arrow-left"></i>
+                                                <span>前のメニュー</span>
+                                            </div>
+                                        </div>
+                                        <template v-for="menu in filteredMenus" :key="menu.to || menu.submenu">
+                                            <template v-if="menu.submenu">
+                                                <div class="list-group-item list-group-item-action list-group-item-light rounded-0" role="button" @click="pushMenu(menu.submenu)">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>{{ menu.label }}</span>
+                                                        <i class="bi bi-arrow-right"></i>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <template v-else-if="menu.to">
+                                                <router-link class="list-group-item list-group-item-action list-group-item-light rounded-0" :to="menu.to" @click="close">
+                                                    <div class="d-flex justify-content-start">
+                                                        <span>{{ menu.label }}</span>
+                                                    </div>
+                                                </router-link>
+                                            </template>
+                                        </template>
+                                    </template>
                                 </div>
                             </div>
-                        </template>
-
-                        <template v-else>
-                            <div class="d-flex flex-row p-3" role="button" @click="popMenu()">
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-arrow-left me-1"></i>
-                                </div>
-                                <div class="d-flex w-100">前へ</div>
-                            </div>
-                            <div v-for="item in filteredMenus" :key="item.to || item.next">
-                                <div v-if="item.next" class="d-flex flex-row p-3" role="button" @click="pushMenu(item.next)">
-                                    <div class="flex-shrink-0">{{ item.label }}</div>
-                                    <div class="d-flex w-100">
-                                        <i class="bi bi-arrow-right ms-auto"></i>
-                                    </div>
-                                </div>
-                                <router-link v-else-if="item.to" class="text-dark text-decoration-none" :to="item.to" @click="close">
-                                    <div class="d-flex flex-row p-3" role="button">
-                                        <div class="flex-shrink-0">{{ item.label }}</div>
-                                    </div>
-                                </router-link>
-                            </div>
-                        </template>
-
+                        </transition>
                     </div>
                 </div>
             </div>
@@ -52,14 +59,12 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useUser } from '@/composables/useUser';
-import { flattenMenuMap } from '@/utils/flattenMenuMap';
-import { menuMap } from '@/config/menuMap';
+import { routeMenus } from '@/config/routeMenus';
 
 const props = defineProps({
     isOpen: Boolean,
 });
 const emit = defineEmits(['close']);
-const { user } = useUser();
 const menuStack = ref([]);
 const isForward = ref(false);
 
@@ -69,42 +74,47 @@ watch(() => props.isOpen, (newValue) => {
     }
 });
 
-const menu = computed(() => {
-    return menuStack.value.at(-1) || 'root';
+const currentMenu = computed(() => {
+    return menuStack.value.at(-1) || 'topLevel';
 });
 
 const filteredMenus = computed(() => {
+    const { user } = useUser();
     const role = user.value?.role ?? null;
     const permissions = user.value?.permissions ?? [];
-    const items = menuMap[menu.value] || [];
+    const menus = routeMenus[currentMenu.value] || [];
 
-    return items.filter(item => {
-        if (item.to) {
+    return menus.filter(menu => {
+        if (menu.to) {
             return (
-                ((item.roles?.length || 0) === 0 || item.roles?.includes(role)) &&
-                ((item.permissions?.length || 0) === 0 || item.permissions?.some(p => permissions.includes(p))) &&
-                (item.showMenu)
+                ((menu.roles?.length || 0) === 0 || menu.roles?.includes(role)) &&
+                ((menu.permissions?.length || 0) === 0 || menu.permissions?.some(p => permissions.includes(p))) &&
+                (menu.showInMenu)
             );
         }
 
-        if (item.next) {
-            const subItems = menuMap[item.next] || [];
-            const hasSubItem = subItems.some(subItem => {
+        if (menu.submenu) {
+            const subMenus = routeMenus[menu.submenu] || [];
+            const hasSubMenu = subMenus.some(subMenu => {
                 return (
-                    ((subItem.roles?.length || 0) === 0 || subItem.roles?.includes(role)) &&
-                    ((subItem.permissions?.length || 0) === 0 || subItem.permissions?.some(p => permissions.includes(p))) &&
-                    (subItem.showMenu)
+                    ((subMenu.roles?.length || 0) === 0 || subMenu.roles?.includes(role)) &&
+                    ((subMenu.permissions?.length || 0) === 0 || subMenu.permissions?.some(p => permissions.includes(p))) &&
+                    (subMenu.showInMenu)
                 );
             });
-            return hasSubItem;
+            return hasSubMenu;
         }
 
         return true;
     });
 });
 
-const pushMenu = (next) => {
-    menuStack.value.push(next);
+const transitionName = computed(() => {
+    return isForward.value ? 'slide-forward' : 'slide-back';
+});
+
+const pushMenu = (menu) => {
+    menuStack.value.push(menu);
     isForward.value = true;
 };
 
@@ -117,3 +127,35 @@ const close = () => {
     emit('close');
 };
 </script>
+
+<style scoped>
+.slide-menu {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* 進むとき: 左→右 */
+.slide-forward-enter-active,
+.slide-forward-leave-active,
+.slide-back-enter-active,
+.slide-back-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-forward-enter-from {
+  transform: translateX(100%);
+}
+.slide-forward-leave-to {
+  transform: translateX(-100%);
+}
+
+/* 戻るとき: 右→左 */
+.slide-back-enter-from {
+  transform: translateX(-100%);
+}
+.slide-back-leave-to {
+  transform: translateX(100%);
+}
+</style>

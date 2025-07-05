@@ -1,26 +1,26 @@
-export const menuMap = {
-    'root': [
+export const routeMenus = {
+    'topLevel': [
         {
             label: '管理',
-            next: 'management',
+            submenu: 'management',
         },
     ],
     'management': [
         {
-            label: 'アカウント追加',
-            showMenu: true,
             to: '/users/add',
+            label: 'アカウント追加',
             requiresAuth: true,
             roles: ['admin'],
             permissions: ['users:create'],
+            showInMenu: true,
         },
         {
-            label: 'アカウント編集',
-            showMenu: false,
             to: '/users/:id',
+            label: 'アカウント編集',
             requiresAuth: true,
             roles: ['admin'],
             permissions: ['users:update'],
+            showInMenu: false,
         },
     ],
 };
