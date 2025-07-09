@@ -5,7 +5,7 @@
                 <button class="btn btn-sm navbar-toggler-icon"></button>
             </button>
             <div class="me-auto">
-                <router-link class="navbar-brand" to="/">LINTEC</router-link>
+                <router-link class="navbar-brand" to="/">Brand</router-link>
             </div>
             <UserAuth />
         </div>
