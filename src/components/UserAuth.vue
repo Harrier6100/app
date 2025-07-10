@@ -1,9 +1,17 @@
 <template>
     <template v-if="isAuth">
         <div class="d-flex">
-            <button class="btn btn-primary" @click="logout">
-                <i class="bi bi-person-circle me-1"></i>{{ userName }}
+
+            <button class="btn btn-primary">
+                <router-link class="text-white" to="/setting">
+                    <i class="bi bi-gear"></i>
+                </router-link>
             </button>
+
+            <button class="btn btn-primary" @click="logout">
+                <i class="bi bi-person-circle me-1"></i>{{ name }}
+            </button>
+
         </div>
     </template>
     <template v-else>
@@ -20,16 +28,25 @@
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { useUser } from '@/composables/useUser';
+import { useConfirm } from '@/composables/useConfirm';
+import { useToast } from '@/composables/useToast';
 import { useToggle } from '@/composables/useToggle';
-import Login from '@/components/Login.vue';
+import Login from '@/components/modals/Login.vue';
 
 const router = useRouter();
 const { isAuth, authLogout } = useAuth();
-const { userName } = useUser();
+const { name } = useUser();
+const { confirm } = useConfirm();
+const { addToast } = useToast();
 const login = useToggle();
 
 const logout = async () => {
+    const isConfirm = await confirm('ログアウトしますか？');
+    if (!isConfirm) return;
+
     await authLogout();
+    addToast('ログアウトしました。', 'success');
+
     router.push('/');
 };
 </script>

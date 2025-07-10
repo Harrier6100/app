@@ -2,7 +2,7 @@
     <input
         ref="inputRef"
         :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
+        @input="emit('update:modelValue', $event.target.value)"
     />
 </template>
 

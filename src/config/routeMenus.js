@@ -7,6 +7,14 @@ export const routeMenus = {
     ],
     'management': [
         {
+            to: '/users',
+            label: 'アカウント管理',
+            requiresAuth: true,
+            roles: ['admin'],
+            permissions: [''],
+            showInMenu: true,
+        },
+        {
             to: '/users/add',
             label: 'アカウント追加',
             requiresAuth: true,

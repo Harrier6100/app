@@ -1,10 +1,10 @@
 <template>
     <teleport to="body">
         <div v-if="props.isOpen">
-            <div class="modal-backdrop show" @click.self="$emit('close')"></div>
+            <div class="modal-backdrop show" @click.self="emit('close')"></div>
             <div class="offcanvas offcanvas-start show">
                 <div class="offcanvas-header">
-                    <button class="btn-close" @click="$emit('close')"></button>
+                    <button class="btn-close" @click="emit('close')"></button>
                 </div>
                 <div class="offcanvas-body overflow-hidden p-0">
                     <div class="position-relative">
@@ -54,7 +54,7 @@
                                             <router-link v-else-if="menu.to"
                                                 class="list-group-item list-group-item-action list-group-item-light rounded-0"
                                                 :to="menu.to"
-                                                @click="$emit('close')"
+                                                @click="emit('close')"
                                             >
                                                 <div class="d-flex justify-content-start">
                                                     <span>{{ menu.label }}</span>

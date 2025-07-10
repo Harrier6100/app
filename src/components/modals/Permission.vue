@@ -2,13 +2,14 @@
     <teleport to="body">
         <div v-if="props.isOpen">
             <div class="modal-backdrop show"></div>
-            <div class="modal d-block show" @click.self="close">
+            <div class="modal d-block show" @click.self="emit('close')">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button class="btn-close" @click="close"></button>
+                            <button class="btn-close" @click="emit('close')"></button>
                         </div>
                         <div class="modal-body">
+
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -33,6 +34,12 @@
                                     </tr>
                                 </tbody>
                             </table>
+
+                            <div class="d-flex justify-content-end gap-3">
+                                <button class="btn btn-secondary" @click="emit('close')">キャンセル</button>
+                                <button class="btn btn-primary" @click="save">保存</button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -54,9 +61,9 @@ const props = defineProps({
 });
 const emit = defineEmits(['save', 'close']);
 const permissions = ref([]);
-const actions = ['read', 'create', 'update', 'delete'];
+const actions = ['view', 'create', 'update', 'remove'];
 
-const close = () => {
+const save = () => {
     emit('save', permissions.value);
     emit('close');
 };

@@ -3,12 +3,14 @@ import { useUserStore } from '@/stores/useUserStore';
 
 export const useUser = () => {
     const userStore = useUserStore();
-    const { user, userName } = storeToRefs(userStore);
+    const { user, name, role, permissions } = storeToRefs(userStore);
     const { fetchUser, clearUser } = userStore;
 
     return {
         user,
-        userName,
+        name,
+        role,
+        permissions,
         fetchUser,
         clearUser,
     };

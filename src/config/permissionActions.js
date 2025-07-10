@@ -1,11 +1,11 @@
 export const permissionActions = {
     'users': {
-        label: 'Users',
+        label: 'アカウント管理',
         actions: {
-            read: 'users:read',
+            view: 'users:view',
             create: 'users:create',
             update: 'users:update',
-            delete: 'users:delete',
+            remove: 'users:remove',
         },
     },
 };

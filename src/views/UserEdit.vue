@@ -69,17 +69,19 @@
                 </div>
             </div>
 
-            <FormButtons
-                :isLoading="isLoading"
-                :isAsync="isAsync"
-                @cancel="cancel"
-            />
+            <div class="d-flex justify-content-end gap-3">
+                <button class="btn btn-secondary" type="button" @click="cancel" :disabled="isLoading">キャンセル</button>
+                <button class="btn btn-primary" :disabled="isLoading">
+                    <span v-if="isAsync" class="spinner-border spinner-border-sm me-1" role="status"></span>保存
+                </button>
+            </div>
 
         </form>
 
     </div>
 
     <Permission
+        v-if="permission.isOpen.value"
         :isOpen="permission.isOpen.value"
         :modelValue="user.permissions"
         @save="user.permissions = $event"
@@ -90,20 +92,23 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useRouterState } from '@/composables/useRouterState';
 import { useLoading } from '@/composables/useLoading';
 import { useAsync } from '@/composables/useAsync';
+import { useToast } from '@/composables/useToast';
 import { useMessage } from '@/composables/useMessage';
 import { useToggle } from '@/composables/useToggle';
 import { api } from '@/services/api';
 import Message from '@/components/Message.vue';
-import FormButtons from '@/components/FormButtons.vue';
 import DatePicker from '@/components/DatePicker.vue';
-import Permission from '@/components/Permission.vue';
+import Permission from '@/components/modals/Permission.vue';
 
 const route = useRoute();
 const router = useRouter();
+const routerState = useRouterState();
 const { isLoading, startLoading, stopLoading } = useLoading();
 const { isAsync, execute } = useAsync();
+const { addToast } = useToast();
 const { errorMessage } = useMessage();
 const permission = useToggle();
 
@@ -144,7 +149,10 @@ const validate = () => {
 };
 
 const save = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+        addToast('入力内容に誤りがあります。', 'error');
+        return;
+    }
 
     try {
         startLoading();
@@ -158,7 +166,9 @@ const save = async () => {
             });
             user.value = userRestore();
         }
+        addToast('保存しました。', 'success');
     } catch (error) {
+        addToast(error.message, 'error');
     } finally {
         stopLoading();
     }
@@ -167,7 +177,7 @@ const save = async () => {
 const cancel = () => {
     router.push({
         name: 'UserList',
-        query: window.history.state?.routeQuery ?? {},
+        query: routerState.routeQuery.value ?? {},
     });
 };
 
@@ -180,10 +190,13 @@ watch(() => user.value.role, (newVal) => {
 onMounted(async () => {
     if (code) {
         try {
+            startLoading();
             const response = await api.get(`/api/users/${code}`);
             user.value = { ...user.value, ...response.data };
         } catch (error) {
+            addToast(error.message, 'error');
         } finally {
+            stopLoading();
         }
     }
 });

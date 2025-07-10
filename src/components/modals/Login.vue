@@ -2,13 +2,14 @@
     <teleport to="body">
         <div v-if="props.isOpen">
             <div class="modal-backdrop show"></div>
-            <div class="modal d-block show" @click.self="$emit('close')">
+            <div class="modal d-block show" @click.self="emit('close')">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button class="btn-close" @click="$emit('close')"></button>
+                            <button class="btn-close" @click="emit('close')"></button>
                         </div>
                         <div class="modal-body">
+
                             <form @submit.prevent="login" autocomplete="off">
                                 <div class="mb-3">
                                     <label class="form-label" for="code">アカウント</label>
@@ -24,6 +25,9 @@
                                     <button class="btn btn-primary">ログイン</button>
                                 </div>
                             </form>
+
+                            <Message :error="errorMessage.error" />
+
                         </div>
                     </div>
                 </div>
@@ -35,21 +39,22 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuth } from '@/composables/useAuth';
+import { useLoading } from '@/composables/useLoading';
 import { useMessage } from '@/composables/useMessage';
 import Message from '@/components/Message.vue';
 
 const { authLogin } = useAuth();
+const { isLoading, startLoading, stopLoading } = useLoading();
 const { errorMessage } = useMessage();
 
 const props = defineProps({
     isOpen: Boolean,
 });
 const emit = defineEmits(['close']);
-const credentialsRestore = () => ({
+const credentials = ref({
     code: '',
     password: '',
 });
-const credentials = ref(credentialsRestore());
 
 const validate = () => {
     let isValid = true;
@@ -73,10 +78,13 @@ const login = async () => {
     if (!validate()) return;
 
     try {
+        startLoading();
         await authLogin(credentials.value);
         emit('close');
     } catch (error) {
+        errorMessage.value.error = error.message;
     } finally {
+        stopLoading();
     }
 };
 </script>

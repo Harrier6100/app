@@ -9,7 +9,7 @@
                             <p>{{ confirmMessage }}</p>
                             <div class="d-flex justify-content-end gap-3">
                                 <button class="btn btn-secondary" @click="confirmNo">No</button>
-                                <button class="btn btn-secondary" @click="confirmYes">Yes</button>
+                                <button class="btn btn-primary" @click="confirmYes">Yes</button>
                             </div>
                         </div>
                     </div>
@@ -23,9 +23,3 @@
 import { useConfirm } from '@/composables/useConfirm';
 const { isOpen, confirmMessage, confirmYes, confirmNo } = useConfirm();
 </script>
-
-<style>
-.modal {
-  z-index: 9999;
-}
-</style>
