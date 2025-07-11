@@ -18,24 +18,16 @@
 
                     <div class="py-3">
                         <div class="row mb-3">
-                            <label class="col-sm-5 col-md-4 col-form-label" for="password">新しいパスワード</label>
+                            <label class="col-sm-5 col-md-4 col-form-label" for="name">名前</label>
                             <div class="col-sm-7 col-md-8">
-                                <input class="form-control" type="password" id="password" v-model="setting.password">
-                                <Message :error="errorMessage.password" />
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label class="col-sm-5 col-md-4 col-form-label" for="passwordConfirm">新しいパスワード確認</label>
-                            <div class="col-sm-7 col-md-8">
-                                <input class="form-control" type="password" id="passwordConfirm" v-model="setting.passwordConfirm">
-                                <Message :error="errorMessage.passwordConfirm" />
+                                <input class="form-control" type="text" id="name" v-model="setting.name">
+                                <Message :error="errorMessage.name" />
                             </div>
                         </div>
                     </div>
 
                     <div class="d-grid col-6 mx-auto">
-                        <button class="btn btn-primary" :disabled="isLoading">
+                        <button class="btn btn-primary" :disabled="isLoading || isChange">
                             <span v-if="isAsync" class="spinner-border spinner-border-sm me-1" role="status"></span>保存
                         </button>
                     </div>
@@ -48,7 +40,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useUser } from '@/composables/useUser';
 import { useLoading } from '@/composables/useLoading';
 import { useAsync } from '@/composables/useAsync';
 import { useToast } from '@/composables/useToast';
@@ -56,32 +49,27 @@ import { useMessage } from '@/composables/useMessage';
 import { api } from '@/services/api';
 import Message from '@/components/Message.vue';
 
+const { user, fetchUser } = useUser();
 const { isLoading, startLoading, stopLoading } = useLoading();
 const { isAsync, execute } = useAsync();
 const { addToast } = useToast();
 const { errorMessage } = useMessage();
 
 const settingRestore = () => ({
-    password: '',
-    passwordConfirm: '',
+    name: '',
 });
 const setting = ref(settingRestore());
+
+const isChange = computed(() => {
+    return setting.value.name === user.value.name;
+});
 
 const validate = () => {
     let isValid = true;
 
-    errorMessage.value.password = '';
-    if (!setting.value.password) {
-        errorMessage.value.password = '新しいパスワードを入力してください。';
-        isValid = false;
-    }
-
-    errorMessage.value.passwordConfirm = '';
-    if (!setting.value.passwordConfirm) {
-        errorMessage.value.passwordConfirm = '新しいパスワードを入力してください。';
-        isValid = false;
-    } else if (setting.value.password !== setting.value.passwordConfirm) {
-        errorMessage.value.passwordConfirm = '新しいパスワードが一致しません。';
+    errorMessage.value.name = '';
+    if (!setting.value.name) {
+        errorMessage.value.name = '名前を入力してください。';
         isValid = false;
     }
 
@@ -89,22 +77,23 @@ const validate = () => {
 };
 
 const save = async () => {
-    if (!validate()) {
-        addToast('エラー項目があります。', 'error');
-        return;
-    }
+    if (!validate()) return;
 
     try {
         startLoading();
         await execute(async () => {
-            await api.put(`/api/auth/me/password`, setting.value);
+            await api.put(`/api/auth/me/name`, setting.value);
         });
-        setting.value = settingRestore();
-        addToast('パスワードが変更されました。', 'success');
+        await fetchUser();
+        addToast('保存しました。', 'success');
     } catch (error) {
         addToast(error.message, 'error');
     } finally {
         stopLoading();
     }
 };
+
+onMounted(() => {
+    setting.value.name = user.value.name;
+});
 </script>

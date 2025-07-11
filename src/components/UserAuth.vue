@@ -3,10 +3,17 @@
         <div class="d-flex">
 
             <button class="btn btn-primary">
-                <router-link class="text-white" to="/setting">
-                    <i class="bi bi-gear"></i>
-                </router-link>
+                <div class="position-relative">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge rounded-pill position-absolute top-0 start-100 translate-middle bg-danger"></span>
+                </div>
             </button>
+
+            <router-link class="text-white" to="/setting">
+                <button class="btn btn-primary">
+                    <i class="bi bi-gear"></i>
+                </button>
+            </router-link>
 
             <button class="btn btn-primary" @click="logout">
                 <i class="bi bi-person-circle me-1"></i>{{ name }}
